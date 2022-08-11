@@ -2,27 +2,11 @@
   "nodes": [
     {
       "note": "0D",
-      "url": "http://35.184.98.21:8080"
-    },
-    {
-      "note": "0D",
       "url": "http://104.154.120.174:8080"
-    },
-    {
-      "note": "db",
-      "url": "http://165.232.136.149:8080"
-    },
-    {
-      "note": "mb",
-      "url": "http://154.12.239.62:8080"
     },
     {
       "note": "daniyal",
       "url": "http://135.181.118.28:8080"
-    },
-    {
-      "note": "thenateway",
-      "url": "http://5.161.130.81:8080"
     },
     {
       "note": "gnudrew",
@@ -43,6 +27,6 @@
     {
       "note": "IdleZone",
       "url": "http://fullnode.letsmove.fun"
-    }  
+    }
   ]
 }
