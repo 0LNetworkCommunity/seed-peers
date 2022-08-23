@@ -43,6 +43,10 @@
     {
       "note": "IdleZone",
       "url": "http://fullnode.letsmove.fun"
-    }  
+    }, 
+    {
+      "note": "Omnistake.com",
+      "url": "http://0l.omnistake.com:8080"
+    }
   ]
 }
