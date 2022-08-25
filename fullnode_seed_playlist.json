@@ -43,6 +43,10 @@
     {
       "note": "IdleZone",
       "url": "http://fullnode.letsmove.fun"
-    }  
+    },
+    {
+      "note": "pithecus",
+      "url": "http://161.97.94.172:8080"
+    }
   ]
 }
