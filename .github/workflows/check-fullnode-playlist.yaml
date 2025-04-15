@@ -9,7 +9,7 @@ on:
       - cron: "45 00 * * *"
 
 env:
-  ACTIONS_STEP_DEBUG: true
+  LIBRA_BIN: ${{github.workspace}}/libra # TODO: Not the right place for binaries
 
 jobs:
   check-fullnode-playlist:
@@ -18,14 +18,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install Libra CLI
-        uses: jaxxstorm/action-install-gh-release@v2.0.0
-        with:
-          repo: 0LNetworkCommunity/libra-framework
-          asset-name: libra
-          rename-to: libra
-          chmod: 0755
-          extension-matching: disable
-          tag: ci-bins
+        run: |
+          wget -O $LIBRA_BIN https://github.com/0LNetworkCommunity/libra-framework/releases/download/ci-bins/libra
+          sudo chmod 755 $LIBRA_BIN
+          echo ${{github.workspace}} >> $GITHUB_PATH
       - name: Print libra CLI version
         run:
           libra version
