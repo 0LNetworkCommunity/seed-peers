@@ -29,6 +29,9 @@ jobs:
       - name: Print libra CLI version
         run:
           libra version
+      - name: Install Python Script Dependencies
+        run:
+          pip install requests
       - name: Run fullnode playlist check
         run:
           python ./scripts/check_fullnode_playlist.py
