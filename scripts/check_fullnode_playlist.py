@@ -5,6 +5,7 @@ import subprocess
 import json
 import re
 import requests
+import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 HEALTHY_THRESHOLD = 100
@@ -135,3 +136,4 @@ if __name__ == "__main__":
     # print("\n📝 Writing healthy nodes to seed_peers.yaml...")
     # write_seed_peers_yaml(healthy_peers)
     print("Done.")
+    sys.exit(exit_status)
