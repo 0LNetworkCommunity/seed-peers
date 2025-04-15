@@ -19,6 +19,9 @@ jobs:
         with:
           repo: 0LNetworkCommunity/libra-framework
           asset-name: libra
+          rename-to: libra
+          chmod: 0755
+          extension-matching: disable
           tag: ci-bins
       - name: Print libra CLI version
         run:
