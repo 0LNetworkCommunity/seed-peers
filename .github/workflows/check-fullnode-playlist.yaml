@@ -1,0 +1,23 @@
+name: build container
+
+on:
+  push:
+    branches:
+      - "main"
+      - "ci-test"
+  schedule:
+      - cron: "45 00 * * *"
+
+jobs:
+  check-fullnode-playlist:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Libra CLI
+        uses: jaxxstorm/action-install-gh-release@v2.0.0
+        with:
+          repo: 0LNetworkCommunity/libra-framework
+      -name: Print libra CLI version
+        run:
+          libra version
