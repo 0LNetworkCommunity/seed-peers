@@ -1,0 +1,37 @@
+name: Full node playlist checks
+
+on:
+  push:
+    branches:
+      - "main"
+      - "ci-test"
+  schedule:
+      - cron: "45 00 * * *"
+
+env:
+  LIBRA_BIN: ${{github.workspace}}/libra # TODO: Not the right place for binaries
+
+jobs:
+  check-fullnode-playlist:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+      - name: Install Libra CLI
+        run: |
+          wget -O $LIBRA_BIN https://github.com/0LNetworkCommunity/libra-framework/releases/download/ci-bins/libra
+          sudo chmod 755 $LIBRA_BIN
+          echo ${{github.workspace}} >> $GITHUB_PATH
+      - name: Print libra CLI version
+        run:
+          libra version
+      - name: Install Python Script Dependencies
+        run:
+          pip install requests
+      - name: Run fullnode playlist check
+        run:
+          python ./scripts/check_fullnode_playlist.py
