@@ -17,6 +17,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Install python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
       - name: Install Libra CLI
         run: |
           wget -O $LIBRA_BIN https://github.com/0LNetworkCommunity/libra-framework/releases/download/ci-bins/libra
@@ -25,3 +29,6 @@ jobs:
       - name: Print libra CLI version
         run:
           libra version
+      - name: Run fullnode playlist check
+        run:
+          python ./scripts/check_fullnode_playlist.py
