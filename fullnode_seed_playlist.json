@@ -11,6 +11,10 @@
     {
       "note": "Blackgrouse",
       "url": "http://91.99.73.45:8080/v1"
+    },
+    {
+      "note": "whichnode",
+      "url": "http://66.165.238.146:8080/v1"
     }
   ]
 }
