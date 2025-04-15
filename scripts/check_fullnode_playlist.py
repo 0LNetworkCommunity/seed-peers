@@ -1,4 +1,5 @@
 # Code originally copied from: https://raw.githubusercontent.com/0LNetworkCommunity/rpc-load-balancer/93b9bb394c61db015e27f8c86f40cc5eafd5dc52/fullnodes.py
+# This script is a work in progress. The idea is to eventually enhance it so it can check VFNs and VNs.
 
 import subprocess
 import json
@@ -8,6 +9,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 HEALTHY_THRESHOLD = 100
 
+# TODO: Get this information from the VN data
 trusted_rpc_url = "http://70.15.242.6:8080/v1"
 
 def get_auction_winners():
@@ -127,6 +129,8 @@ if __name__ == "__main__":
     print("\n❌ Unhealthy nodes (IP and reason):")
     for peer_id, (url, reason) in unhealthy_peers.items():
         print(f"{peer_id} (reason: {reason})")
+
+    exit_status = 1 if len(unhealthy_peers) else 0
 
     # print("\n📝 Writing healthy nodes to seed_peers.yaml...")
     # write_seed_peers_yaml(healthy_peers)
