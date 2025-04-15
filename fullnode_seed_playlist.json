@@ -1,10 +1,6 @@
 {
   "nodes": [
     {
-      "note": "0l fyi",
-      "url": "https://rpc.scan.openlibra.world/v1"
-    },
-    {
       "note": "dmski",
       "url": "http://172.104.211.8:8080/v1"
     },
