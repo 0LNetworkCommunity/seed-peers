@@ -90,6 +90,16 @@ def write_seed_peers_yaml(peer_dict, filename="seed_peers.yaml"):
             f.write(f"{peer_id}:\n")
             f.write(f"- \"{addr}\"\n")
 
+
+def get_fullnode_playlist():
+    print("\nGetting fullnode playlist info...")
+    nodes_info = get_fullnode_playlist_info()
+    print("\n📡 Discovered fullnode peers (name, url):")
+    for node in nodes_info:
+        print(f"{node['note']} -> {node['url']}")
+    return nodes_info
+
+
 @click.command()
 @click.option('--fullnode-playlist', is_flag=True)
 @click.option('--seed-peers', is_flag=True)
@@ -108,11 +118,7 @@ def main(fullnode_playlist, seed_peers, vfns):
     #     if ip_match:
     #         print(f"{peer_id} -> {ip_match.group(1)}")
 
-    print("\nGetting fullnode playlist info...")
-    nodes_info = get_fullnode_playlist_info()
-    print("\n📡 Discovered fullnode peers (name, url):")
-    for node in nodes_info:
-        print(f"{node['note']} -> {node['url']}")
+    nodes_info = get_fullnode_playlist()
 
     print("\nGetting reference block height from RPC...")
     ref_height = get_reference_block_height()
