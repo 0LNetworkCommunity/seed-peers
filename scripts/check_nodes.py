@@ -93,8 +93,8 @@ def write_seed_peers_yaml(peer_dict, filename="seed_peers.yaml"):
 @click.command()
 @click.option('--fullnode-playlist', is_flag=True)
 @click.option('--seed-peers', is_flag=True)
-@click.option('--vfn', is_flag=True)
-def main(fullnode_playlist, seed_peers, vfn):
+@click.option('--vfns', is_flag=True)
+def main(fullnode_playlist, seed_peers, vfns):
     # print("Getting auction winner addresses...")
     # auction_winners = get_auction_winners()
     # print("Auction winner addresses:")
