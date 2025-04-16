@@ -1,16 +1,20 @@
 {
   "nodes": [
     {
-      "note": "0l fyi",
-      "url": "https://rpc.scan.openlibra.world/v1"
-    },
-    {
       "note": "dmski",
       "url": "http://172.104.211.8:8080/v1"
     },
     {
       "note": "sirouk",
       "url": "http://70.15.242.6:8080/v1"
+    },
+    {
+      "note": "Blackgrouse",
+      "url": "http://91.99.73.45:8080/v1"
+    },
+    {
+      "note": "whichnode",
+      "url": "http://66.165.238.146:8080/v1"
     }
   ]
 }
