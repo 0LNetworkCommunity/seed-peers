@@ -1,4 +1,4 @@
-name: Full node playlist checks
+name: Seed peers checks
 
 on:
   push:
@@ -12,7 +12,7 @@ env:
   LIBRA_BIN: ${{github.workspace}}/libra # TODO: Not the right place for binaries
 
 jobs:
-  check-fullnode-playlist:
+  check-seed-peers:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -32,6 +32,6 @@ jobs:
       - name: Install Python Script Dependencies
         run:
           pip install requests click
-      - name: Run fullnode playlist check
+      - name: Run seed peer set check
         run:
-          python ./scripts/check_nodes.py --fullnode-playlist
+          python ./scripts/check_nodes.py --seed-peers

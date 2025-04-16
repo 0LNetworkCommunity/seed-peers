@@ -1,6 +1,7 @@
 # Code originally copied from: https://raw.githubusercontent.com/0LNetworkCommunity/rpc-load-balancer/93b9bb394c61db015e27f8c86f40cc5eafd5dc52/fullnodes.py
 # This script is a work in progress. The idea is to eventually enhance it so it can check VFNs and VNs.
 
+import click
 import subprocess
 import json
 import re
@@ -89,7 +90,11 @@ def write_seed_peers_yaml(peer_dict, filename="seed_peers.yaml"):
             f.write(f"{peer_id}:\n")
             f.write(f"- \"{addr}\"\n")
 
-if __name__ == "__main__":
+@click.command()
+@click.option('--fullnode-playlist', is_flag=True)
+@click.option('--seed-peers', is_flag=True)
+@click.option('--vfn', is_flag=True)
+def main(fullnode_playlist, seed_peers, vfn):
     # print("Getting auction winner addresses...")
     # auction_winners = get_auction_winners()
     # print("Auction winner addresses:")
@@ -137,3 +142,6 @@ if __name__ == "__main__":
     # write_seed_peers_yaml(healthy_peers)
     print("Done.")
     sys.exit(exit_status)
+
+if __name__ == "__main__":
+    main()
