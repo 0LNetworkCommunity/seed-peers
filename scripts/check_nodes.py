@@ -66,11 +66,12 @@ def check_single_node(url, reference_height):
         return ("unhealthy", url, "timeout or error")
 
 
-def check_p2p_node_health(host: str, port: int):
+def check_p2p_node_health(host: str):
+    port = 6182
     try:
         with socket.create_connection((host, port), timeout=5):
             print(f"Connection to {host}:{port} succeeded.")
-            return ("healthy", host)
+            return ("healthy", host, "")
     except (socket.timeout, socket.error) as e:
         print(f"Connection to {host}:{port} failed: {e}")
         return ("unhealthy", host, e)
@@ -96,16 +97,17 @@ def check_rpc_nodes_health(nodes_info, reference_height, max_threads=10):
                 unhealthy[node_id] = (addr, detail)
     return healthy, unhealthy
 
+
 def check_p2p_nodes_health(nodes_info, max_threads=10):
     healthy = {}
     unhealthy = {}
     peer_info = {}
     for node in nodes_info:
-        peer_info[node['note']] = node['url']
+        peer_info[node['note']] = node['ip']
     with ThreadPoolExecutor(max_workers=max_threads) as executor:
         futures = {
-            executor.submit(check_single_node, url, reference_height): (node_id, url)
-            for node_id, url in peer_info.items()
+            executor.submit(check_p2p_node_health, ip): (node_id, ip)
+            for node_id, ip in peer_info.items()
         }
         for future in as_completed(futures):
             node_id, addr = futures[future]
@@ -115,6 +117,7 @@ def check_p2p_nodes_health(nodes_info, max_threads=10):
             else:
                 unhealthy[node_id] = (addr, detail)
     return healthy, unhealthy
+
 
 def write_seed_peers_yaml(peer_dict, filename="seed_peers.yaml"):
     with open(filename, "w") as f:
@@ -147,7 +150,7 @@ def get_vfns():
         if ip_match:
             ip_address = ip_match.group(1)
             print(f"{peer_id} -> {ip_address}")
-            nodes_info.append({'note': peer_id, 'url': f"http://{ip_address}:8080/v1"})
+            nodes_info.append({'note': peer_id, 'ip': ip_address})
     return nodes_info
 
 
