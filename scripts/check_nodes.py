@@ -100,25 +100,44 @@ def get_fullnode_playlist():
     return nodes_info
 
 
+def get_vfns():
+    print("Getting auction winner addresses...")
+    auction_winners = get_auction_winners()
+    print("Auction winner addresses:")
+    print(auction_winners)
+
+    print("\nGetting fullnode peer info...")
+    peer_info = get_fullnode_info(auction_winners)
+    print("\n📡 Discovered fullnode peers (address, IP):")
+    for peer_id, addr in peer_info.items():
+        ip_match = re.search(r"/ip4/([\d.]+)/", addr)
+        if ip_match:
+            print(f"{peer_id} -> {ip_match.group(1)}")
+
+
 @click.command()
 @click.option('--fullnode-playlist', is_flag=True)
 @click.option('--seed-peers', is_flag=True)
 @click.option('--vfns', is_flag=True)
-def main(fullnode_playlist, seed_peers, vfns):
-    # print("Getting auction winner addresses...")
-    # auction_winners = get_auction_winners()
-    # print("Auction winner addresses:")
-    # print(auction_winners)
+@click.option('--update-seed-peers', is_flag=True)
+def main(fullnode_playlist, seed_peers, vfns, update_seed_peers):
 
-    # print("\nGetting fullnode peer info...")
-    # peer_info = get_fullnode_info(auction_winners)
-    # print("\n📡 Discovered fullnode peers (address, IP):")
-    # for peer_id, addr in peer_info.items():
-    #     ip_match = re.search(r"/ip4/([\d.]+)/", addr)
-    #     if ip_match:
-    #         print(f"{peer_id} -> {ip_match.group(1)}")
+    if sum([fullnode_playlist, seed_peers, vfns]) > 1:
+        print("ERROR: only one of --fullnode-playlist, --seed-peers, --vfns can be specified")
+        sys.exit(1)
 
-    nodes_info = get_fullnode_playlist()
+    # Default to --fullnode-playlist
+    if sum([fullnode_playlist, seed_peers, vfns]) == 0:
+        fullnode_playlist = True
+
+    if update_seed_peers and not vfns:
+        print("ERROR: --update-seed-peers can only be used with --vfns")
+        sys.exit(1)
+
+    if (fullnode_playlist):
+        nodes_info = get_fullnode_playlist()
+    elif (vfns):
+        nodes_info = get_vfns()
 
     print("\nGetting reference block height from RPC...")
     ref_height = get_reference_block_height()
