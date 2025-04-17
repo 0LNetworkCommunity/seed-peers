@@ -7,6 +7,7 @@ import json
 import re
 import requests
 import sys
+import socket
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 HEALTHY_THRESHOLD = 100
@@ -64,7 +65,38 @@ def check_single_node(url, reference_height):
     except Exception:
         return ("unhealthy", url, "timeout or error")
 
-def check_node_health(nodes_info, reference_height, max_threads=10):
+
+def check_p2p_node_health(host: str, port: int):
+    try:
+        with socket.create_connection((host, port), timeout=5):
+            print(f"Connection to {host}:{port} succeeded.")
+            return ("healthy", host)
+    except (socket.timeout, socket.error) as e:
+        print(f"Connection to {host}:{port} failed: {e}")
+        return ("unhealthy", host, e)
+
+
+def check_rpc_nodes_health(nodes_info, reference_height, max_threads=10):
+    healthy = {}
+    unhealthy = {}
+    peer_info = {}
+    for node in nodes_info:
+        peer_info[node['note']] = node['url']
+    with ThreadPoolExecutor(max_workers=max_threads) as executor:
+        futures = {
+            executor.submit(check_single_node, url, reference_height): (node_id, url)
+            for node_id, url in peer_info.items()
+        }
+        for future in as_completed(futures):
+            node_id, addr = futures[future]
+            status, ip, detail = future.result()
+            if status == "healthy":
+                healthy[node_id] = addr
+            else:
+                unhealthy[node_id] = (addr, detail)
+    return healthy, unhealthy
+
+def check_p2p_nodes_health(nodes_info, max_threads=10):
     healthy = {}
     unhealthy = {}
     peer_info = {}
@@ -148,7 +180,11 @@ def main(fullnode_playlist, seed_peers, vfns, update_seed_peers):
     print(f"Reference block height: {ref_height}")
 
     print("\nChecking health of each node...")
-    healthy_peers, unhealthy_peers = check_node_health(nodes_info, ref_height)
+    if fullnode_playlist:
+        healthy_peers, unhealthy_peers = check_rpc_nodes_health(nodes_info, ref_height)
+
+    if vfns:
+        healthy_peers, unhealthy_peers = check_p2p_nodes_health(nodes_info)
 
     print("\n✅ Healthy nodes (IP and block height diff):")
     for peer_id, url in healthy_peers.items():
