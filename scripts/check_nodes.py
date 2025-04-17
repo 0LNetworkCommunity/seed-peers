@@ -101,6 +101,7 @@ def get_fullnode_playlist():
 
 
 def get_vfns():
+    nodes_info = []
     print("Getting auction winner addresses...")
     auction_winners = get_auction_winners()
     print("Auction winner addresses:")
@@ -112,7 +113,10 @@ def get_vfns():
     for peer_id, addr in peer_info.items():
         ip_match = re.search(r"/ip4/([\d.]+)/", addr)
         if ip_match:
-            print(f"{peer_id} -> {ip_match.group(1)}")
+            ip_address = ip_match.group(1)
+            print(f"{peer_id} -> {ip_address}")
+            nodes_info.append({'note': peer_id, 'url': f"http://{ip_address}:8080/v1"})
+    return nodes_info
 
 
 @click.command()
