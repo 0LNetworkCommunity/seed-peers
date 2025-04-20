@@ -31,7 +31,7 @@ jobs:
           libra version
       - name: Install Python Script Dependencies
         run:
-          pip install requests click
+          pip install -r ./scripts/check_nodes_requirements.txt
       - name: Run vfns check
         run:
           python ./scripts/check_nodes.py --vfns
