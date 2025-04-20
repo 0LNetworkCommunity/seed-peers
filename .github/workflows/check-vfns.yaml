@@ -1,4 +1,4 @@
-name: Very Full node set checks
+name: Validator Full node set checks
 
 on:
   push:
