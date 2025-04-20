@@ -8,6 +8,7 @@ import re
 import requests
 import sys
 import socket
+import yaml
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 HEALTHY_THRESHOLD = 100
@@ -66,8 +67,10 @@ def check_single_node(url, reference_height):
         return ("unhealthy", url, "timeout or error")
 
 
-def check_p2p_node_health(host: str):
+def check_p2p_node_health(addr: str):
     port = 6182
+    ip_match = re.search(r"/ip4/([\d.]+)/", addr)
+    host = ip_match.group(1)
     try:
         with socket.create_connection((host, port), timeout=5):
             print(f"Connection to {host}:{port} succeeded.")
@@ -103,7 +106,7 @@ def check_p2p_nodes_health(nodes_info, max_threads=10):
     unhealthy = {}
     peer_info = {}
     for node in nodes_info:
-        peer_info[node['note']] = node['ip']
+        peer_info[node['note']] = node['addr']
     with ThreadPoolExecutor(max_workers=max_threads) as executor:
         futures = {
             executor.submit(check_p2p_node_health, ip): (node_id, ip)
@@ -150,7 +153,32 @@ def get_vfns():
         if ip_match:
             ip_address = ip_match.group(1)
             print(f"{peer_id} -> {ip_address}")
-            nodes_info.append({'note': peer_id, 'ip': ip_address})
+            nodes_info.append({'note': peer_id, 'addr': addr})
+    return nodes_info
+
+
+def get_seed_peers():
+    nodes_info = []
+    print("\nGetting seed peers info...")
+    seed_peers_file = "./seed_peers.yaml"
+    seed_peers_data = {}
+    try:
+        with open(seed_peers_file, 'r') as file:
+            seed_peers_data = yaml.safe_load(file)
+    except FileNotFoundError:
+        print(f"Error: File not found: {seed_peers_file}")
+        return None
+    except yaml.YAMLError as e:
+        print(f"Error: Failed to parse YAML file: {e}")
+        return None
+    print(f"{seed_peers_data}")
+    for peer_id, addr_array in seed_peers_data.items():
+        addr = addr_array[0]
+        ip_match = re.search(r"/ip4/([\d.]+)/", addr)
+        if ip_match:
+            ip_address = ip_match.group(1)
+            print(f"{peer_id} -> {ip_address}")
+            nodes_info.append({'note': peer_id, 'addr': addr})
     return nodes_info
 
 
@@ -177,6 +205,8 @@ def main(fullnode_playlist, seed_peers, vfns, update_seed_peers):
         nodes_info = get_fullnode_playlist()
     elif (vfns):
         nodes_info = get_vfns()
+    elif (seed_peers):
+        nodes_info = get_seed_peers()
 
     print("\nGetting reference block height from RPC...")
     ref_height = get_reference_block_height()
@@ -185,30 +215,31 @@ def main(fullnode_playlist, seed_peers, vfns, update_seed_peers):
     print("\nChecking health of each node...")
     if fullnode_playlist:
         healthy_peers, unhealthy_peers = check_rpc_nodes_health(nodes_info, ref_height)
+        print("\n✅ Healthy nodes (IP and block height diff):")
+        for peer_id, url in healthy_peers.items():
+            # Extract block diff from earlier health check
+            try:
+                response = requests.get(url, timeout=5)
+                node_height = int(response.json().get("block_height", 0))
+                diff = ref_height - node_height
+                print(f"{peer_id} (block height diff: {diff})")
+            except:
+                print(f"{peer_id} (unexpected error re-checking height)")
 
-    if vfns:
+        print("\n❌ Unhealthy nodes (IP and reason):")
+        for peer_id, (url, reason) in unhealthy_peers.items():
+            print(f"{peer_id} (reason: {reason})")
+
+    if vfns or seed_peers:
         healthy_peers, unhealthy_peers = check_p2p_nodes_health(nodes_info)
-
-    print("\n✅ Healthy nodes (IP and block height diff):")
-    for peer_id, url in healthy_peers.items():
-        # Extract block diff from earlier health check
-        try:
-            response = requests.get(url, timeout=5)
-            node_height = int(response.json().get("block_height", 0))
-            diff = ref_height - node_height
-            print(f"{peer_id} (block height diff: {diff})")
-        except:
-            print(f"{peer_id} (unexpected error re-checking height)")
-
-    print("\n❌ Unhealthy nodes (IP and reason):")
-    for peer_id, (url, reason) in unhealthy_peers.items():
-        print(f"{peer_id} (reason: {reason})")
 
     exit_status = 1 if len(unhealthy_peers) else 0
 
-    # print("\n📝 Writing healthy nodes to seed_peers.yaml...")
-    # write_seed_peers_yaml(healthy_peers)
-    print("Done.")
+    if update_seed_peers:
+        print("\n📝 Writing healthy nodes to seed_peers.yaml...")
+        write_seed_peers_yaml(healthy_peers)
+        print("Done.")
+    
     sys.exit(exit_status)
 
 if __name__ == "__main__":
