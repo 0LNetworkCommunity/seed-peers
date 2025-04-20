@@ -17,4 +17,4 @@ The file [seed_peers.yaml](./seed_peers.yaml) may become out of date. It can be 
 ```
 $ python ./scripts/check_nodes.py --vfns --update-seed-peers
 ```
-The updated seed_peers.yaml can then be commited back to the repo.
+This reads the current VFN set from the chain, excludes unresponsive nodes and writes the result to seed_peers.yml. The updated seed_peers.yaml can then be commited back to the repo.
