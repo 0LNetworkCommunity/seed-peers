@@ -14,7 +14,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 HEALTHY_THRESHOLD = 100
 
 # TODO: Get this information from the VN data
-trusted_rpc_url = "http://70.15.242.6:8080/v1"
+trusted_rpc_url = "http://66.165.238.146:8080/v1"
 
 def get_auction_winners():
     command = f"libra query --url {trusted_rpc_url} view --function-id 0x1::epoch_boundary::get_auction_winners"
