@@ -1,11 +1,8 @@
 {
-  "note": "AARON",
-  "url": "http://49.13.77.74:8080/v1"
-}
   "nodes": [
     {
-      "note": "dmski",
-      "url": "http://172.104.211.8:8080/v1"
+      "note": "AARON",
+  "url": "http://49.13.77.74:8080/v1"
     },
     {
       "note": "sirouk",
